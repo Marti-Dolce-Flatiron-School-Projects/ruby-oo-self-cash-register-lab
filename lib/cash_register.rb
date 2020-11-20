@@ -7,7 +7,7 @@ require 'pry'
 #
 # cash_register.rb
 class CashRegister
-  attr_accessor :total, :discount, :last_transaction_amount, :items
+  attr_accessor :items, :discount, :total, :last_transaction
 
   def initialize(discount = 0)
     @total = 0
@@ -15,32 +15,22 @@ class CashRegister
     @items = []
   end
 
-  def add_item(title, price, quantity = 1)
-    if quantity > 1
-      i = 0
-      while i < quantity
-        @items << title
-        i += 1
-      end
-    else
-      @items << title
-    end
-    @total += price * quantity
-    @last_transaction_amount = @total
-    @total
+  def add_item(title, amount, quantity = 1)
+    self.total += amount * quantity
+    quantity.times { items << title }
+    self.last_transaction = quantity * amount
   end
 
   def apply_discount
-    return 'There is no discount to apply.' if @discount.zero?
-
-    @total -= @total * @discount / 100
-    "After the discount, the total comes to $#{self.total}."
+    if discount.zero?
+      'There is no discount to apply.'
+    else
+      self.total = (total * ((100.0 - discount.to_f) / 100)).to_i
+      "After the discount, the total comes to $#{self.total}."
+    end
   end
 
   def void_last_transaction
-    #self.items.delete_at(self.items.index(self.last_transaction[0]))
-
-    @total -= @last_transaction_amount
-
+    self.total -= last_transaction
   end
 end
